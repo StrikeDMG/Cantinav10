@@ -33,11 +33,20 @@ namespace Cantina1
             txtCart = new Label();
             btnAdd = new Button();
             btnRmv = new Button();
-            btnEnd = new Button();
+            btnCheckout = new Button();
             listBox1 = new ListBox();
             listBox2 = new ListBox();
             txtCantina = new Label();
             txtTotal = new Label();
+            gbPayment = new GroupBox();
+            rbPix = new RadioButton();
+            rbCredit = new RadioButton();
+            rbDebit = new RadioButton();
+            rbCash = new RadioButton();
+            lblPaidValue = new Label();
+            lblChange = new Label();
+            txtPaidValue = new TextBox();
+            gbPayment.SuspendLayout();
             SuspendLayout();
             // 
             // txtProd
@@ -70,7 +79,7 @@ namespace Cantina1
             // 
             // btnRmv
             // 
-            btnRmv.Location = new Point(342, 175);
+            btnRmv.Location = new Point(423, 97);
             btnRmv.Name = "btnRmv";
             btnRmv.Size = new Size(75, 26);
             btnRmv.TabIndex = 3;
@@ -78,14 +87,15 @@ namespace Cantina1
             btnRmv.UseVisualStyleBackColor = true;
             btnRmv.Click += btnRmv_Click;
             // 
-            // btnEnd
+            // btnCheckout
             // 
-            btnEnd.Location = new Point(342, 246);
-            btnEnd.Name = "btnEnd";
-            btnEnd.Size = new Size(75, 23);
-            btnEnd.TabIndex = 4;
-            btnEnd.Text = "Finalizar";
-            btnEnd.UseVisualStyleBackColor = true;
+            btnCheckout.Location = new Point(343, 386);
+            btnCheckout.Name = "btnCheckout";
+            btnCheckout.Size = new Size(75, 23);
+            btnCheckout.TabIndex = 4;
+            btnCheckout.Text = "Finalizar";
+            btnCheckout.UseVisualStyleBackColor = true;
+            btnCheckout.Click += btnCheckout_Click;
             // 
             // listBox1
             // 
@@ -93,7 +103,7 @@ namespace Cantina1
             listBox1.ItemHeight = 15;
             listBox1.Location = new Point(62, 100);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(147, 169);
+            listBox1.Size = new Size(147, 214);
             listBox1.TabIndex = 5;
             // 
             // listBox2
@@ -102,7 +112,7 @@ namespace Cantina1
             listBox2.ItemHeight = 15;
             listBox2.Location = new Point(583, 100);
             listBox2.Name = "listBox2";
-            listBox2.Size = new Size(153, 169);
+            listBox2.Size = new Size(153, 214);
             listBox2.TabIndex = 6;
             // 
             // txtCantina
@@ -117,23 +127,112 @@ namespace Cantina1
             // txtTotal
             // 
             txtTotal.AutoSize = true;
-            txtTotal.Location = new Point(351, 296);
+            txtTotal.Location = new Point(583, 394);
             txtTotal.Name = "txtTotal";
             txtTotal.Size = new Size(36, 15);
             txtTotal.TabIndex = 8;
             txtTotal.Text = "Total:";
-            
+            // 
+            // gbPayment
+            // 
+            gbPayment.Controls.Add(rbPix);
+            gbPayment.Controls.Add(rbCredit);
+            gbPayment.Controls.Add(rbDebit);
+            gbPayment.Controls.Add(rbCash);
+            gbPayment.Location = new Point(342, 139);
+            gbPayment.Name = "gbPayment";
+            gbPayment.Size = new Size(200, 140);
+            gbPayment.TabIndex = 9;
+            gbPayment.TabStop = false;
+            gbPayment.Text = "Formas de pagamento";
+            // 
+            // rbPix
+            // 
+            rbPix.AutoSize = true;
+            rbPix.Location = new Point(5, 109);
+            rbPix.Name = "rbPix";
+            rbPix.Size = new Size(42, 19);
+            rbPix.TabIndex = 3;
+            rbPix.TabStop = true;
+            rbPix.Text = "PIX";
+            rbPix.UseVisualStyleBackColor = true;
+            rbPix.CheckedChanged += PaymentMethod_CheckedChanged;
+            // 
+            // rbCredit
+            // 
+            rbCredit.AutoSize = true;
+            rbCredit.Location = new Point(5, 78);
+            rbCredit.Name = "rbCredit";
+            rbCredit.Size = new Size(64, 19);
+            rbCredit.TabIndex = 2;
+            rbCredit.TabStop = true;
+            rbCredit.Text = "Crédito";
+            rbCredit.UseVisualStyleBackColor = true;
+            rbCredit.CheckedChanged += PaymentMethod_CheckedChanged;
+            // 
+            // rbDebit
+            // 
+            rbDebit.AutoSize = true;
+            rbDebit.Location = new Point(6, 50);
+            rbDebit.Name = "rbDebit";
+            rbDebit.Size = new Size(60, 19);
+            rbDebit.TabIndex = 1;
+            rbDebit.TabStop = true;
+            rbDebit.Text = "Débito";
+            rbDebit.UseVisualStyleBackColor = true;
+            rbDebit.CheckedChanged += PaymentMethod_CheckedChanged;
+            // 
+            // rbCash
+            // 
+            rbCash.AutoSize = true;
+            rbCash.Location = new Point(6, 21);
+            rbCash.Name = "rbCash";
+            rbCash.Size = new Size(70, 19);
+            rbCash.TabIndex = 0;
+            rbCash.TabStop = true;
+            rbCash.Text = "Dinheiro";
+            rbCash.UseVisualStyleBackColor = true;
+            rbCash.CheckedChanged += PaymentMethod_CheckedChanged;
+            // 
+            // lblPaidValue
+            // 
+            lblPaidValue.AutoSize = true;
+            lblPaidValue.Location = new Point(342, 299);
+            lblPaidValue.Name = "lblPaidValue";
+            lblPaidValue.Size = new Size(90, 15);
+            lblPaidValue.TabIndex = 10;
+            lblPaidValue.Text = "Valor Pago (R$):";
+            // 
+            // lblChange
+            // 
+            lblChange.AutoSize = true;
+            lblChange.Location = new Point(344, 328);
+            lblChange.Name = "lblChange";
+            lblChange.Size = new Size(80, 15);
+            lblChange.TabIndex = 11;
+            lblChange.Text = "Troco: R$ 0,00";
+            // 
+            // txtPaidValue
+            // 
+            txtPaidValue.Location = new Point(438, 296);
+            txtPaidValue.Name = "txtPaidValue";
+            txtPaidValue.Size = new Size(100, 23);
+            txtPaidValue.TabIndex = 12;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(txtPaidValue);
+            Controls.Add(lblChange);
+            Controls.Add(lblPaidValue);
+            Controls.Add(gbPayment);
             Controls.Add(txtTotal);
             Controls.Add(txtCantina);
             Controls.Add(listBox2);
             Controls.Add(listBox1);
-            Controls.Add(btnEnd);
+            Controls.Add(btnCheckout);
             Controls.Add(btnRmv);
             Controls.Add(btnAdd);
             Controls.Add(txtCart);
@@ -141,6 +240,8 @@ namespace Cantina1
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
+            gbPayment.ResumeLayout(false);
+            gbPayment.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -151,11 +252,19 @@ namespace Cantina1
         private Label txtCart;
         private Button btnAdd;
         private Button btnRmv;
-        private Button btnEnd;
+        private Button btnCheckout;
         private ListBox listBox1;
         private ListBox listBox2;
         private Label txtCantina;
         private Label txtTotal;
         private readonly EventHandler txtTotal_Click;
+        private GroupBox gbPayment;
+        private RadioButton rbPix;
+        private RadioButton rbCredit;
+        private RadioButton rbDebit;
+        private RadioButton rbCash;
+        private Label lblPaidValue;
+        private Label lblChange;
+        private TextBox txtPaidValue;
     }
 }

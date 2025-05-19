@@ -11,16 +11,19 @@ namespace Cantina1
         public int Id { get; private set; }
         public string Nome { get; set; }
         public decimal Preco { get; set; }
+        public int QuantidadeEmEstoque { get; set; }
 
-        public Produto(int id, string nome, decimal preco)
+        public Produto(int id, string nome, decimal preco, int quantidadeEmEstoque)
         {
             Id = id;
             Nome = nome;
             Preco = preco;
+            QuantidadeEmEstoque = quantidadeEmEstoque;
         }
 
         public override string ToString()
         {
+            string infoEstoque = QuantidadeEmEstoque > 0 ? $"(Estoque: {QuantidadeEmEstoque})" : "(ESGOTADO)";
             return $"{Nome} - R$ {Preco:F2}";
         }
 
