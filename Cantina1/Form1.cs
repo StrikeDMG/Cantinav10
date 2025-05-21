@@ -38,26 +38,39 @@ namespace Cantina1
         {
             if (listBox1.SelectedItem != null)
             {
-                Produto produtoSelecionado = (Produto)listBox1.SelectedItem;
-                ItemCarrinho itemParaSelecionar = null;
+                Produto produtoSelecionadoDaLista = (Produto)listBox1.SelectedItem;
+                ItemCarrinho? itemParaSelecionarNoCarrinho = null;
 
-                ItemCarrinho? itemExistente = carrinhoItens.FirstOrDefault(item => item.Produto.Id == produtoSelecionado.Id);
-
-                if (itemExistente != null)
+                if (produtoSelecionadoDaLista.QuantidadeEmEstoque <= 0)
                 {
-                    itemExistente.IncrementarQuantidade();
-                    itemParaSelecionar = itemExistente;
+                    MessageBox.Show($"Desculpe, '{produtoSelecionadoDaLista.Nome}' está esgotado.", "Produto Esgotado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                ItemCarrinho? itemExistenteNoCarrinho = carrinhoItens.FirstOrDefault(item => item.Produto.Id == produtoSelecionadoDaLista.Id);
+                if (itemExistenteNoCarrinho != null)
+                {
+                    if (itemExistenteNoCarrinho.Quantidade + 1 > produtoSelecionadoDaLista.QuantidadeEmEstoque)
+                    {
+                        MessageBox.Show($"Não há estoque suficiente de '{produtoSelecionadoDaLista.Nome}' para adicionar mais unidades.\n" +
+                                       $"Disponível: {produtoSelecionadoDaLista.QuantidadeEmEstoque}, No carrinho: {itemExistenteNoCarrinho.Quantidade}",
+                                       "Estoque Insuficiente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    itemExistenteNoCarrinho.IncrementarQuantidade();
+                    itemParaSelecionarNoCarrinho = itemExistenteNoCarrinho;
                 }
                 else
                 {
-                    ItemCarrinho novoItem = new ItemCarrinho(produtoSelecionado, 1);
+                    ItemCarrinho novoItem = new ItemCarrinho(produtoSelecionadoDaLista, 1);
                     carrinhoItens.Add(novoItem);
-                    itemParaSelecionar = novoItem;
+                    itemParaSelecionarNoCarrinho = novoItem;
                 }
-
                 AtualizarDisplayCarrinho();
                 AtualizarTotalCarrinho();
-                SelecionarItemNoCarrinho(itemParaSelecionar);
+                if (itemParaSelecionarNoCarrinho != null)
+                {
+                    SelecionarItemNoCarrinho(itemParaSelecionarNoCarrinho);
+                }
             }
             else
             {
@@ -88,7 +101,7 @@ namespace Cantina1
             if (listBox2.SelectedItem != null)
             {
                 ItemCarrinho itemSelecionadoParaRemover = (ItemCarrinho)listBox2.SelectedItem;
-                ItemCarrinho itemParaSelecionarAposRemocao = null;
+                ItemCarrinho? itemParaSelecionarAposRemocao = null;
 
                 bool aindaResta = itemSelecionadoParaRemover.DecrementarQuantidade();
 
@@ -151,27 +164,107 @@ namespace Cantina1
                 MessageBox.Show("O carrinho está vazio. Adicione itens antes de finalizar a compra.", "Carrinho Vazio", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
-
-            int totalUnidades = 0;
-            foreach (ItemCarrinho item in carrinhoItens)
+            string nomeDoCliente = txtClientName.Text.Trim();
+            if (string.IsNullOrWhiteSpace(nomeDoCliente)) 
             {
-                totalUnidades += item.Quantidade;
+                nomeDoCliente = "Cliente";
+            }
+            DateTime dataHoraDoPedido = DateTime.Now;
+            string formaPagamentoSelecionada = "";
+            decimal valorTotalCompra = carrinhoItens.Sum(item => item.PrecoTotal);
+            string detalhesPagamentoInfo = "";
+            decimal trocoCalculado = 0m;
+
+            if (rbCash.Checked)
+            {
+                formaPagamentoSelecionada = "Dinheiro";
+                if (!decimal.TryParse(txtPaidValue.Text, out decimal valorPago) || valorPago <= 0)
+                {
+                    MessageBox.Show("Por favor, insira um valor pago válido.", "Valor Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtPaidValue.Focus();
+                    return;
+                }
+
+                if (valorPago < valorTotalCompra)
+                {
+                    MessageBox.Show($"O valor pago (R$ {valorPago:F2}) é insuficiente para cobrir o total da compra (R$ {valorTotalCompra:F2}).", "Valor Insuficiente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtPaidValue.Focus();
+                    return;
+                }
+                trocoCalculado = valorPago - valorTotalCompra;
+                lblChange.Text = $"Troco: R$ {trocoCalculado:F2}";
+                detalhesPagamentoInfo = $"\nForma de Pagamento: {formaPagamentoSelecionada}\nValor Pago: R$ {valorPago:F2}\nTroco: R$ {trocoCalculado:F2}";
+            }
+            else if (rbDebit.Checked)
+            {
+                formaPagamentoSelecionada = "Cartão de Débito";
+                detalhesPagamentoInfo = $"\nForma de Pagamento: {formaPagamentoSelecionada}";
+            }
+            else if (rbCredit.Checked)
+            {
+                formaPagamentoSelecionada = "Cartão de Crédito";
+                detalhesPagamentoInfo = $"\nForma de Pagamento: {formaPagamentoSelecionada}";
+            }
+            else if (rbPix.Checked)
+            {
+                formaPagamentoSelecionada = "PIX";
+                detalhesPagamentoInfo = $"\nForma de Pagamento: {formaPagamentoSelecionada}";
+            }
+            else
+            {
+                MessageBox.Show("Por favor, selecione uma forma de pagamento.", "Forma de Pagamento", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
+            foreach (ItemCarrinho itemVendido in carrinhoItens)
+            {
+                Produto? produtoOriginalNaLista = listBox1.Items.OfType<Produto>()
+                                                    .FirstOrDefault(p => p.Id == itemVendido.Produto.Id);
+                if (produtoOriginalNaLista != null)
+                {
+                    if (produtoOriginalNaLista.QuantidadeEmEstoque >= itemVendido.Quantidade)
+                    {
+                        produtoOriginalNaLista.QuantidadeEmEstoque -= itemVendido.Quantidade;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Erro de estoque inconsistente para {produtoOriginalNaLista.Nome}. Operação abortada.", "Erro Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+            }
 
-            string resumoPedido = $"Pedido Finalizado com Sucesso!\n\n" +
+            listBox1.BeginUpdate();
+            var produtosParaReexibir = new List<Produto>();
+            foreach (Produto prod in listBox1.Items)
+            {
+                produtosParaReexibir.Add(prod);
+            }
+            listBox1.Items.Clear();
+            foreach (Produto prod in produtosParaReexibir)
+            {
+                listBox1.Items.Add(prod);
+            }
+            listBox1.EndUpdate();
+
+            int totalUnidades = carrinhoItens.Sum(item => item.Quantidade);
+            string resumoPedido = $"Pedido Finalizado com Sucesso para: {nomeDoCliente}!\n\n" +
+                                  $"Data/Hora: {dataHoraDoPedido:dd/MM/yyyy HH:mm:ss}\n\n" +
                                   $"Total de Produtos Diferentes: {carrinhoItens.Count}\n" +
                                   $"Total de Unidades: {totalUnidades}\n" +
-                                  $"Valor Total: {txtTotal.Text.Replace("Total: ", "")}\n\n" +
+                                  $"Valor Total da Compra: R$ {valorTotalCompra:F2}" +
+                                  $"{detalhesPagamentoInfo}\n\n" +
                                   $"Obrigado pela sua compra!";
-
             MessageBox.Show(resumoPedido, "Compra Finalizada", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
 
             carrinhoItens.Clear();
             AtualizarDisplayCarrinho();
             AtualizarTotalCarrinho();
+
+            txtClientName.Clear();
+            txtPaidValue.Clear();
+            lblChange.Text = "Troco: R$ 0,00";
+
         }
 
         private void AtualizarVisibilidadeCamposDinheiro()
@@ -204,6 +297,11 @@ namespace Cantina1
         }
 
         private void rbPix_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblChange_Click(object sender, EventArgs e)
         {
 
         }

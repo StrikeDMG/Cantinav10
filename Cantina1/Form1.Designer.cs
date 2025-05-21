@@ -46,6 +46,8 @@ namespace Cantina1
             lblPaidValue = new Label();
             lblChange = new Label();
             txtPaidValue = new TextBox();
+            lblClientName = new Label();
+            txtClientName = new TextBox();
             gbPayment.SuspendLayout();
             SuspendLayout();
             // 
@@ -197,7 +199,7 @@ namespace Cantina1
             // lblPaidValue
             // 
             lblPaidValue.AutoSize = true;
-            lblPaidValue.Location = new Point(342, 299);
+            lblPaidValue.Location = new Point(342, 329);
             lblPaidValue.Name = "lblPaidValue";
             lblPaidValue.Size = new Size(90, 15);
             lblPaidValue.TabIndex = 10;
@@ -206,24 +208,43 @@ namespace Cantina1
             // lblChange
             // 
             lblChange.AutoSize = true;
-            lblChange.Location = new Point(344, 328);
+            lblChange.Location = new Point(342, 357);
             lblChange.Name = "lblChange";
             lblChange.Size = new Size(80, 15);
             lblChange.TabIndex = 11;
             lblChange.Text = "Troco: R$ 0,00";
+            lblChange.Click += lblChange_Click;
             // 
             // txtPaidValue
             // 
-            txtPaidValue.Location = new Point(438, 296);
+            txtPaidValue.Location = new Point(438, 326);
             txtPaidValue.Name = "txtPaidValue";
             txtPaidValue.Size = new Size(100, 23);
             txtPaidValue.TabIndex = 12;
+            // 
+            // lblClientName
+            // 
+            lblClientName.AutoSize = true;
+            lblClientName.Location = new Point(346, 297);
+            lblClientName.Name = "lblClientName";
+            lblClientName.Size = new Size(47, 15);
+            lblClientName.TabIndex = 13;
+            lblClientName.Text = "Cliente:";
+            // 
+            // txtClientName
+            // 
+            txtClientName.Location = new Point(438, 294);
+            txtClientName.Name = "txtClientName";
+            txtClientName.Size = new Size(100, 23);
+            txtClientName.TabIndex = 14;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(853, 450);
+            Controls.Add(txtClientName);
+            Controls.Add(lblClientName);
             Controls.Add(txtPaidValue);
             Controls.Add(lblChange);
             Controls.Add(lblPaidValue);
@@ -266,5 +287,7 @@ namespace Cantina1
         private Label lblPaidValue;
         private Label lblChange;
         private TextBox txtPaidValue;
+        private Label lblClientName;
+        private TextBox txtClientName;
     }
 }
