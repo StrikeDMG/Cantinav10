@@ -273,6 +273,7 @@ namespace Cantina1
             lblPaidValue.Visible = pagamentoEmDinheiro;
             txtPaidValue.Visible = pagamentoEmDinheiro;
             lblChange.Visible = pagamentoEmDinheiro;
+            pictureBox7.Visible = pagamentoEmDinheiro;
 
             if (!pagamentoEmDinheiro)
             {

@@ -23,8 +23,16 @@ namespace Cantina1
 
         public override string ToString()
         {
-            string infoEstoque = QuantidadeEmEstoque > 0 ? $"(Estoque: {QuantidadeEmEstoque})" : "(ESGOTADO)";
-            return $"{Nome} - R$ {Preco:F2}";
+            string displayEstoque;
+            if (QuantidadeEmEstoque > 0)
+            {
+                displayEstoque = $"({QuantidadeEmEstoque})";
+            }
+            else
+            {
+                displayEstoque = "(Esgotado)";
+            }
+            return $"{Nome} {displayEstoque} - R$ {Preco:F2}";
         }
 
         public override bool Equals(object? obj)
