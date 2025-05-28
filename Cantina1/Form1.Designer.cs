@@ -48,7 +48,7 @@ namespace Cantina1
             txtPaidValue = new TextBox();
             lblClientName = new Label();
             txtClientName = new TextBox();
-            numericUpDown1 = new NumericUpDown();
+            numQuantity = new NumericUpDown();
             pictureBox1 = new PictureBox();
             pictureBox2 = new PictureBox();
             pictureBox3 = new PictureBox();
@@ -60,7 +60,7 @@ namespace Cantina1
             label2 = new Label();
             lblChange = new Label();
             gbPayment.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numQuantity).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
@@ -291,15 +291,17 @@ namespace Cantina1
             txtClientName.Size = new Size(131, 23);
             txtClientName.TabIndex = 14;
             // 
-            // numericUpDown1
+            // numQuantity
             // 
-            numericUpDown1.BackColor = SystemColors.WindowText;
-            numericUpDown1.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            numericUpDown1.ForeColor = Color.FromArgb(230, 255, 0);
-            numericUpDown1.Location = new Point(437, 308);
-            numericUpDown1.Name = "numericUpDown1";
-            numericUpDown1.Size = new Size(82, 29);
-            numericUpDown1.TabIndex = 15;
+            numQuantity.BackColor = SystemColors.WindowText;
+            numQuantity.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            numQuantity.ForeColor = Color.FromArgb(230, 255, 0);
+            numQuantity.Location = new Point(437, 308);
+            numQuantity.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numQuantity.Name = "numQuantity";
+            numQuantity.Size = new Size(82, 29);
+            numQuantity.TabIndex = 15;
+            numQuantity.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // pictureBox1
             // 
@@ -412,7 +414,7 @@ namespace Cantina1
             Controls.Add(lblPaidValue);
             Controls.Add(label1);
             Controls.Add(txtProd);
-            Controls.Add(numericUpDown1);
+            Controls.Add(numQuantity);
             Controls.Add(lblChange);
             Controls.Add(gbPayment);
             Controls.Add(txtTotal);
@@ -434,7 +436,7 @@ namespace Cantina1
             Load += Form1_Load;
             gbPayment.ResumeLayout(false);
             gbPayment.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numQuantity).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
@@ -467,7 +469,7 @@ namespace Cantina1
         private TextBox txtPaidValue;
         private Label lblClientName;
         private TextBox txtClientName;
-        private NumericUpDown numericUpDown1;
+        private NumericUpDown numQuantity;
         private PictureBox pictureBox1;
         private PictureBox pictureBox2;
         private PictureBox pictureBox3;

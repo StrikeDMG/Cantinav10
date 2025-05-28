@@ -36,46 +36,90 @@ namespace Cantina1
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedItem != null)
+            if (listBox1.SelectedItem == null)
             {
-                Produto produtoSelecionadoDaLista = (Produto)listBox1.SelectedItem;
-                ItemCarrinho? itemParaSelecionarNoCarrinho = null;
+                MessageBox.Show("Selecione um produto da lista para adicionar.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-                if (produtoSelecionadoDaLista.QuantidadeEmEstoque <= 0)
-                {
-                    MessageBox.Show($"Desculpe, '{produtoSelecionadoDaLista.Nome}' está esgotado.", "Produto Esgotado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                ItemCarrinho? itemExistenteNoCarrinho = carrinhoItens.FirstOrDefault(item => item.Produto.Id == produtoSelecionadoDaLista.Id);
-                if (itemExistenteNoCarrinho != null)
-                {
-                    if (itemExistenteNoCarrinho.Quantidade + 1 > produtoSelecionadoDaLista.QuantidadeEmEstoque)
-                    {
-                        MessageBox.Show($"Não há estoque suficiente de '{produtoSelecionadoDaLista.Nome}' para adicionar mais unidades.\n" +
-                                       $"Disponível: {produtoSelecionadoDaLista.QuantidadeEmEstoque}, No carrinho: {itemExistenteNoCarrinho.Quantidade}",
-                                       "Estoque Insuficiente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                    itemExistenteNoCarrinho.IncrementarQuantidade();
-                    itemParaSelecionarNoCarrinho = itemExistenteNoCarrinho;
-                }
-                else
-                {
-                    ItemCarrinho novoItem = new ItemCarrinho(produtoSelecionadoDaLista, 1);
-                    carrinhoItens.Add(novoItem);
-                    itemParaSelecionarNoCarrinho = novoItem;
-                }
-                AtualizarDisplayCarrinho();
-                AtualizarTotalCarrinho();
-                if (itemParaSelecionarNoCarrinho != null)
-                {
-                    SelecionarItemNoCarrinho(itemParaSelecionarNoCarrinho);
-                }
+            Produto produtoSelecionadoDaLista = (Produto)listBox1.SelectedItem;
+
+            int quantidadeDesejada = (int)numQuantity.Value;
+
+            if (quantidadeDesejada <= 0)
+            {
+                MessageBox.Show("A quantidade para adicionar deve ser maior que zero.", "Quantidade Inválida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                numQuantity.Value = 1;
+                numQuantity.Focus();
+                return;
+            }
+
+            ItemCarrinho? itemParaSelecionarNoCarrinho = null;
+
+            if (produtoSelecionadoDaLista.QuantidadeEmEstoque <= 0)
+            {
+                MessageBox.Show($"Desculpe, '{produtoSelecionadoDaLista.Nome}' está completamente esgotado.", "Produto Esgotado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                numQuantity.Value = 1;
+                return;
+            }
+
+            ItemCarrinho? itemExistenteNoCarrinho = carrinhoItens.FirstOrDefault(item => item.Produto.Id == produtoSelecionadoDaLista.Id);
+            int quantidadeJaNoCarrinho = itemExistenteNoCarrinho?.Quantidade ?? 0;
+
+            int espacoDisponivelNoEstoqueParaAdicionar = produtoSelecionadoDaLista.QuantidadeEmEstoque - quantidadeJaNoCarrinho;
+
+            if (espacoDisponivelNoEstoqueParaAdicionar <= 0 && itemExistenteNoCarrinho != null)
+            {
+                MessageBox.Show($"Você já adicionou todo o estoque disponível de '{produtoSelecionadoDaLista.Nome}' ({produtoSelecionadoDaLista.QuantidadeEmEstoque} unidades) ao carrinho.",
+                                "Estoque Máximo no Carrinho", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                numQuantity.Value = 1;
+                itemParaSelecionarNoCarrinho = itemExistenteNoCarrinho;
+            }
+            else if (espacoDisponivelNoEstoqueParaAdicionar <= 0 && itemExistenteNoCarrinho == null)
+            {
+                MessageBox.Show($"Desculpe, '{produtoSelecionadoDaLista.Nome}' está esgotado.", "Produto Esgotado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                numQuantity.Value = 1;
             }
             else
             {
-                MessageBox.Show("Selecione um produto da lista para adicionar.", "Aviso");
+                int quantidadeRealAdicionada = Math.Min(quantidadeDesejada, espacoDisponivelNoEstoqueParaAdicionar);
+
+                if (quantidadeRealAdicionada <= 0)
+                {
+                    MessageBox.Show($"Não foi possível adicionar mais unidades de '{produtoSelecionadoDaLista.Nome}'. Verifique o estoque e a quantidade desejada.",
+                               "Não Adicionado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else
+                {
+                    if (quantidadeRealAdicionada < quantidadeDesejada)
+                    {
+                        MessageBox.Show($"Apenas {quantidadeRealAdicionada} unidade(s) de '{produtoSelecionadoDaLista.Nome}' foram adicionadas devido ao estoque limitado.\n" +
+                                        $"(Você pediu {quantidadeDesejada}, mas apenas {espacoDisponivelNoEstoqueParaAdicionar} unidade(s) extra(s) estava(m) disponível(is) para adicionar ao carrinho).",
+                                        "Quantidade Ajustada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                    if (itemExistenteNoCarrinho != null)
+                    {
+                        itemExistenteNoCarrinho.IncrementarQuantidade(quantidadeRealAdicionada);
+                        itemParaSelecionarNoCarrinho = itemExistenteNoCarrinho;
+                    }
+                    else
+                    {
+                        ItemCarrinho novoItem = new ItemCarrinho(produtoSelecionadoDaLista, quantidadeRealAdicionada);
+                        carrinhoItens.Add(novoItem);
+                        itemParaSelecionarNoCarrinho = novoItem;
+                    }
+                }
             }
+
+            AtualizarDisplayCarrinho();
+            AtualizarTotalCarrinho();
+            if (itemParaSelecionarNoCarrinho != null)
+            {
+                SelecionarItemNoCarrinho(itemParaSelecionarNoCarrinho);
+            }
+
+            numQuantity.Value = 1;
         }
 
         private void SelecionarItemNoCarrinho(ItemCarrinho itemParaSelecionar)
