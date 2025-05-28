@@ -13,6 +13,7 @@ namespace Cantina1
     public partial class Form1 : Form
     {
         private List<ItemCarrinho> carrinhoItens = new List<ItemCarrinho>();
+        private FormBalcao? formBalcaoInstance = null;
 
         public Form1()
         {
@@ -32,6 +33,23 @@ namespace Cantina1
             AtualizarDisplayCarrinho();
             AtualizarTotalCarrinho();
             AtualizarVisibilidadeCamposDinheiro();
+        }
+        private void AbrirOuMostrarFormBalcao()
+        {
+            if (formBalcaoInstance == null || formBalcaoInstance.IsDisposed)
+            {
+                formBalcaoInstance = new FormBalcao();
+                formBalcaoInstance.Show();
+            }
+            else
+            {
+                if (!formBalcaoInstance.Visible)
+                {
+                    formBalcaoInstance.Show();
+                }
+                formBalcaoInstance.BringToFront();
+                formBalcaoInstance.Activate();
+            }
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -209,50 +227,54 @@ namespace Cantina1
                 return;
             }
             string nomeDoCliente = txtClientName.Text.Trim();
-            if (string.IsNullOrWhiteSpace(nomeDoCliente)) 
+            if (string.IsNullOrWhiteSpace(nomeDoCliente))
             {
                 nomeDoCliente = "Cliente";
             }
             DateTime dataHoraDoPedido = DateTime.Now;
+
             string formaPagamentoSelecionada = "";
             decimal valorTotalCompra = carrinhoItens.Sum(item => item.PrecoTotal);
-            string detalhesPagamentoInfo = "";
+
+            decimal valorPagoPeloCliente = 0m;
             decimal trocoCalculado = 0m;
 
             if (rbCash.Checked)
             {
                 formaPagamentoSelecionada = "Dinheiro";
-                if (!decimal.TryParse(txtPaidValue.Text, out decimal valorPago) || valorPago <= 0)
+                if (!decimal.TryParse(txtPaidValue.Text, out valorPagoPeloCliente) || valorPagoPeloCliente <= 0)
                 {
                     MessageBox.Show("Por favor, insira um valor pago válido.", "Valor Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtPaidValue.Focus();
                     return;
                 }
 
-                if (valorPago < valorTotalCompra)
+                if (valorPagoPeloCliente < valorTotalCompra)
                 {
-                    MessageBox.Show($"O valor pago (R$ {valorPago:F2}) é insuficiente para cobrir o total da compra (R$ {valorTotalCompra:F2}).", "Valor Insuficiente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"O valor pago (R$ {valorPagoPeloCliente:F2}) é insuficiente para cobrir o total da compra (R$ {valorTotalCompra:F2}).", "Valor Insuficiente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtPaidValue.Focus();
                     return;
                 }
-                trocoCalculado = valorPago - valorTotalCompra;
+                trocoCalculado = valorPagoPeloCliente - valorTotalCompra;
                 lblChange.Text = $"Troco: R$ {trocoCalculado:F2}";
-                detalhesPagamentoInfo = $"\nForma de Pagamento: {formaPagamentoSelecionada}\nValor Pago: R$ {valorPago:F2}\nTroco: R$ {trocoCalculado:F2}";
             }
             else if (rbDebit.Checked)
             {
                 formaPagamentoSelecionada = "Cartão de Débito";
-                detalhesPagamentoInfo = $"\nForma de Pagamento: {formaPagamentoSelecionada}";
+                valorPagoPeloCliente = valorTotalCompra;
+                trocoCalculado = 0;
             }
             else if (rbCredit.Checked)
             {
                 formaPagamentoSelecionada = "Cartão de Crédito";
-                detalhesPagamentoInfo = $"\nForma de Pagamento: {formaPagamentoSelecionada}";
+                valorPagoPeloCliente = valorTotalCompra;
+                trocoCalculado = 0;
             }
             else if (rbPix.Checked)
             {
                 formaPagamentoSelecionada = "PIX";
-                detalhesPagamentoInfo = $"\nForma de Pagamento: {formaPagamentoSelecionada}";
+                valorPagoPeloCliente = valorTotalCompra;
+                trocoCalculado = 0;
             }
             else
             {
@@ -276,30 +298,56 @@ namespace Cantina1
                         return;
                     }
                 }
+                else
+                {
+                    MessageBox.Show($"Erro crítico: Produto '{itemVendido.Produto.Nome}' do carrinho não encontrado. Operação abortada.", "Erro Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
 
             listBox1.BeginUpdate();
             var produtosParaReexibir = new List<Produto>();
-            foreach (Produto prod in listBox1.Items)
-            {
-                produtosParaReexibir.Add(prod);
-            }
+            foreach (Produto prod in listBox1.Items) { produtosParaReexibir.Add(prod); }
             listBox1.Items.Clear();
-            foreach (Produto prod in produtosParaReexibir)
-            {
-                listBox1.Items.Add(prod);
-            }
+            foreach (Produto prod in produtosParaReexibir) { listBox1.Items.Add(prod); }
             listBox1.EndUpdate();
 
-            int totalUnidades = carrinhoItens.Sum(item => item.Quantidade);
-            string resumoPedido = $"Pedido Finalizado com Sucesso para: {nomeDoCliente}!\n\n" +
-                                  $"Data/Hora: {dataHoraDoPedido:dd/MM/yyyy HH:mm:ss}\n\n" +
-                                  $"Total de Produtos Diferentes: {carrinhoItens.Count}\n" +
-                                  $"Total de Unidades: {totalUnidades}\n" +
-                                  $"Valor Total da Compra: R$ {valorTotalCompra:F2}" +
-                                  $"{detalhesPagamentoInfo}\n\n" +
-                                  $"Obrigado pela sua compra!";
-            MessageBox.Show(resumoPedido, "Compra Finalizada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            List<ItemCarrinho> itensDoPedido = new List<ItemCarrinho>();
+            foreach (var itemOriginalDoCarrinho in carrinhoItens)
+            {
+                itensDoPedido.Add(new ItemCarrinho(itemOriginalDoCarrinho.Produto, itemOriginalDoCarrinho.Quantidade));
+            }
+
+            Pedido novoPedido = new Pedido(
+                dataHoraDoPedido,
+                nomeDoCliente,
+                itensDoPedido,
+                formaPagamentoSelecionada,
+                valorPagoPeloCliente,
+                trocoCalculado
+            );
+
+            GerenciadorPedidos.AdicionarPedido(novoPedido);
+
+
+            string detalhesPagamentoParaMensagem = "";
+            if (novoPedido.FormaPagamento == "Dinheiro")
+            {
+                detalhesPagamentoParaMensagem = $"\nForma de Pagamento: {novoPedido.FormaPagamento}\nValor Pago: R$ {novoPedido.ValorPago:F2}\nTroco: R$ {novoPedido.Troco:F2}";
+            }
+            else
+            {
+                detalhesPagamentoParaMensagem = $"\nForma de Pagamento: {novoPedido.FormaPagamento}";
+            }
+
+            string resumoPedido = $"Pedido Nº {novoPedido.Id.ToString().Substring(0, 8)} Finalizado!\n\n" +
+                                  $"Cliente: {novoPedido.NomeCliente}\n" +
+                                  $"Data/Hora: {novoPedido.DataHoraPedido:dd/MM/yyyy HH:mm:ss}\n" +
+                                  $"Valor Total: R$ {novoPedido.ValorTotal:F2}" +
+                                  $"{detalhesPagamentoParaMensagem}\n\n" +
+                                  $"Obrigado!";
+            MessageBox.Show(resumoPedido, "Compra Concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             carrinhoItens.Clear();
             AtualizarDisplayCarrinho();
@@ -308,7 +356,10 @@ namespace Cantina1
             txtClientName.Clear();
             txtPaidValue.Clear();
             lblChange.Text = "Troco: R$ 0,00";
-
+            numQuantity.Value = 1;
+            rbCash.Checked = true;
+            AtualizarVisibilidadeCamposDinheiro();
+            AbrirOuMostrarFormBalcao();
         }
 
         private void AtualizarVisibilidadeCamposDinheiro()
