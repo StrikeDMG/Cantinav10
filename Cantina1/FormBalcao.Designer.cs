@@ -31,7 +31,7 @@
             listBoxPedidosPendentes = new ListBox();
             btnMarcarEmPreparo = new Button();
             btnMarcarPronto = new Button();
-            listBoxItensDetalhe = new ListBox();
+            listBoxPedidosProntos = new ListBox();
             lblClienteDetalhe = new Label();
             lblStatusDetalhe = new Label();
             SuspendLayout();
@@ -63,14 +63,14 @@
             btnMarcarPronto.Text = "Pronto";
             btnMarcarPronto.UseVisualStyleBackColor = true;
             // 
-            // listBoxItensDetalhe
+            // listBoxPedidosProntos
             // 
-            listBoxItensDetalhe.FormattingEnabled = true;
-            listBoxItensDetalhe.ItemHeight = 15;
-            listBoxItensDetalhe.Location = new Point(517, 12);
-            listBoxItensDetalhe.Name = "listBoxItensDetalhe";
-            listBoxItensDetalhe.Size = new Size(271, 334);
-            listBoxItensDetalhe.TabIndex = 4;
+            listBoxPedidosProntos.FormattingEnabled = true;
+            listBoxPedidosProntos.ItemHeight = 15;
+            listBoxPedidosProntos.Location = new Point(517, 12);
+            listBoxPedidosProntos.Name = "listBoxPedidosProntos";
+            listBoxPedidosProntos.Size = new Size(271, 334);
+            listBoxPedidosProntos.TabIndex = 4;
             // 
             // lblClienteDetalhe
             // 
@@ -97,7 +97,7 @@
             ClientSize = new Size(800, 450);
             Controls.Add(lblStatusDetalhe);
             Controls.Add(lblClienteDetalhe);
-            Controls.Add(listBoxItensDetalhe);
+            Controls.Add(listBoxPedidosProntos);
             Controls.Add(btnMarcarPronto);
             Controls.Add(btnMarcarEmPreparo);
             Controls.Add(listBoxPedidosPendentes);
@@ -113,7 +113,7 @@
         private ListBox listBoxPedidosPendentes;
         private Button btnMarcarEmPreparo;
         private Button btnMarcarPronto;
-        private ListBox listBoxItensDetalhe;
+        private ListBox listBoxPedidosProntos;
         private Label lblClienteDetalhe;
         private Label lblStatusDetalhe;
     }

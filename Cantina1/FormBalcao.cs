@@ -67,7 +67,7 @@ namespace Cantina1
                 //     {
                 //         listBoxItensDetalhe.Items.Add($"{item.Quantidade}x {item.Produto.Nome} - {item.PrecoTotal:C}");
                 //     }
-                this.Text = $"Balcão - Pedido: {pedidoSelecionado.Id.ToString().Substring(0, 4)}";
+                this.Text = $"Balcão - Pedido: {pedidoSelecionado.ID}";
             }
             else
             {
@@ -84,7 +84,7 @@ namespace Cantina1
         {
             if (listBoxPedidosPendentes.SelectedItem is Pedido pedidoSel)
             {
-                GerenciadorPedidos.AtualizarStatusPedido(pedidoSel.Id, StatusPedido.EmPreparo);
+                GerenciadorPedidos.AtualizarStatusPedido(pedidoSel.ID, StatusPedido.EmPreparo);
                 CarregarPedidosIniciais();
             }
         }
@@ -93,7 +93,7 @@ namespace Cantina1
         {
             if (listBoxPedidosPendentes.SelectedItem is Pedido pedidoSel)
             {
-                GerenciadorPedidos.AtualizarStatusPedido(pedidoSel.Id, StatusPedido.Pronto);
+                GerenciadorPedidos.AtualizarStatusPedido(pedidoSel.ID, StatusPedido.Pronto);
                 CarregarPedidosIniciais();
             }
         }

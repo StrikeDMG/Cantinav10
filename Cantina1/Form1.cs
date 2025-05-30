@@ -329,8 +329,7 @@ namespace Cantina1
             );
 
             GerenciadorPedidos.AdicionarPedido(novoPedido);
-
-
+            string extratoParaCliente = novoPedido.GerarExtratoCompleto();
             string detalhesPagamentoParaMensagem = "";
             if (novoPedido.FormaPagamento == "Dinheiro")
             {
@@ -341,13 +340,15 @@ namespace Cantina1
                 detalhesPagamentoParaMensagem = $"\nForma de Pagamento: {novoPedido.FormaPagamento}";
             }
 
-            string resumoPedido = $"Pedido Nº {novoPedido.Id.ToString().Substring(0, 8)} Finalizado!\n\n" +
+            string resumoPedido = $"Pedido Nº {novoPedido.ID} Finalizado!\n\n" +
                                   $"Cliente: {novoPedido.NomeCliente}\n" +
                                   $"Data/Hora: {novoPedido.DataHoraPedido:dd/MM/yyyy HH:mm:ss}\n" +
                                   $"Valor Total: R$ {novoPedido.ValorTotal:F2}" +
                                   $"{detalhesPagamentoParaMensagem}\n\n" +
                                   $"Obrigado!";
             MessageBox.Show(resumoPedido, "Compra Concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            string mensagemFinal = $"Pedido Registrado com Sucesso!\n\n{extratoParaCliente}\nObrigado!";
+            MessageBox.Show(mensagemFinal, "Compra Concluída", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             carrinhoItens.Clear();
             AtualizarDisplayCarrinho();
