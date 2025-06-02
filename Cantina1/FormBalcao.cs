@@ -58,15 +58,7 @@ namespace Cantina1
         {
             if (listBoxPedidosPendentes.SelectedItem is Pedido pedidoSelecionado)
             {
-                // Aqui você populacria Labels/TextBoxes com os detalhes do pedidoSelecionado
-                // Ex: lblClienteDetalhe.Text = pedidoSelecionado.NomeCliente;
-                //     lblStatusDetalhe.Text = pedidoSelecionado.Status.ToString();
-                //     // Para os itens, você pode usar outra ListBox ou um TextBox multiline
-                //     listBoxItensDetalhe.Items.Clear();
-                //     foreach(var item in pedidoSelecionado.Itens)
-                //     {
-                //         listBoxItensDetalhe.Items.Add($"{item.Quantidade}x {item.Produto.Nome} - {item.PrecoTotal:C}");
-                //     }
+
                 this.Text = $"Balcão - Pedido: {pedidoSelecionado.ID}";
             }
             else

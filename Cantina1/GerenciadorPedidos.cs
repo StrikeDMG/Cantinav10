@@ -10,7 +10,7 @@ namespace Cantina1
     {
         private static List<Pedido> listaDePedidos = new List<Pedido>();
         private static readonly object lockObj = new object();
-        private static int proximoIdPedido = 1; // Contador para o próximo ID sequencial (começando em 1)
+        private static int proximoIdPedido = 1;
 
         public static event EventHandler<PedidoAdicionadoEventArgs>? PedidoAdicionado;
 
@@ -20,9 +20,9 @@ namespace Cantina1
 
             lock (lockObj)
             {
-                novoPedido.DefinirId(proximoIdPedido); // Atribui o ID sequencial ao pedido
+                novoPedido.DefinirId(proximoIdPedido);
                 listaDePedidos.Add(novoPedido);
-                proximoIdPedido++; // Incrementa o contador para o próximo pedido
+                proximoIdPedido++;
             }
             OnPedidoAdicionado(novoPedido);
         }
@@ -35,7 +35,7 @@ namespace Cantina1
             }
         }
 
-        // O ID agora é int
+
         public static Pedido? ObterPedidoPorId(int id)
         {
             lock (lockObj)
@@ -44,7 +44,7 @@ namespace Cantina1
             }
         }
 
-        // O ID do pedido agora é int
+
         public static void AtualizarStatusPedido(int pedidoId, StatusPedido novoStatus)
         {
             lock (lockObj)
