@@ -23,11 +23,16 @@ namespace Cantina1
         private void Form1_Load(object sender, EventArgs e)
         {
             listBox1.Items.Clear();
-            listBox1.Items.Add(new Produto(1, "Coxinha", 5.00m, 20));
-            listBox1.Items.Add(new Produto(2, "Pastel", 6.00m, 20));
-            listBox1.Items.Add(new Produto(3, "Refrigerante", 4.50m, 40));
-            listBox1.Items.Add(new Produto(4, "Suco", 3.00m, 30));
-            listBox1.Items.Add(new Produto(5, "Brigadeiro", 2.50m, 15));
+            listBox1.Items.Add(new Produto(1, "Pão de Queijo", 3.50m, 20));
+            listBox1.Items.Add(new Produto(2, "Coxinha", 5.00m, 20));
+            listBox1.Items.Add(new Produto(3, "Pastel [Carne]", 6.00m, 40));
+            listBox1.Items.Add(new Produto(4, "Pastel [Queijo]", 5.50m, 30));
+            listBox1.Items.Add(new Produto(5, "Suco Natural [300 mL]", 4.00m, 15));
+            listBox1.Items.Add(new Produto(6, "Refrigerante [350 mL]", 4.50m, 15));
+            listBox1.Items.Add(new Produto(7, "Hambúrguer Simples", 8.00m, 15));
+            listBox1.Items.Add(new Produto(8, "X-Burguer", 9.00m, 15));
+            listBox1.Items.Add(new Produto(9, "X-Tudo", 12.00m, 15));
+            listBox1.Items.Add(new Produto(10, "Água Mineral [500 mL]", 4.00m, 15));
 
             carrinhoItens.Clear();
             AtualizarDisplayCarrinho();
